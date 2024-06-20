@@ -7,6 +7,7 @@
 #include "CPP_PlayerCharacter.generated.h"
 
 class UCameraComponent;
+class UCPP_HealthComponent;
 
 UCLASS()
 class PROJECT_20_06_API ACPP_PlayerCharacter : public ACharacter
@@ -22,6 +23,21 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Player Character Component")
+	inline UCPP_HealthComponent* GetHealthComponent() const;
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	virtual void OnPlayerCharacterTakeAnyDamage
+	(
+		AActor* DamagedActor,
+		float Damage,
+		const class UDamageType* DamageType,
+		class AController* InstigatedBy,
+		AActor* DamageCauser
+	);
+
 protected:
 	virtual void MoveForward(float Axis);
 	virtual void MoveRight(float Axis);
@@ -32,8 +48,12 @@ protected:
 
 private:
 	void CreateAndInitializeFPCamera();
+	void CreateAndCheckHealthComponent();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
 	UCameraComponent* FPCamera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
+	UCPP_HealthComponent* HealthComponent;
 };
