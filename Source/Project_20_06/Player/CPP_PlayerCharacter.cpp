@@ -2,15 +2,19 @@
 
 #include "Player/CPP_PlayerCharacter.h"
 #include "Player/ActorComponent/CPP_HealthComponent.h"
-#include <Kismet/KismetMathLibrary.h>
-#include "Camera/CameraComponent.h"
-#include <Interfaces/CPP_InteractionInterface.h>
+#include "Player/ActorComponent/CPP_InventoryComponent.h"
 
+#include <Kismet/KismetMathLibrary.h>
+
+#include "Camera/CameraComponent.h"
+
+#include <Interfaces/CPP_InteractionInterface.h>
 
 ACPP_PlayerCharacter::ACPP_PlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	CreateAndCheckInventoryComponent();
 	CreateAndInitializeFPCamera();
 	CreateAndCheckHealthComponent();
 }
@@ -18,7 +22,7 @@ ACPP_PlayerCharacter::ACPP_PlayerCharacter()
 void ACPP_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 inline UCPP_HealthComponent* ACPP_PlayerCharacter::GetHealthComponent() const
@@ -104,6 +108,12 @@ void ACPP_PlayerCharacter::Interact()
 	}
 }
 
+void ACPP_PlayerCharacter::DropWeapon()
+{
+	UCPP_InventoryComponent* inventoryComponent = GetInventoryComponent();
+	inventoryComponent->DropWeapon(inventoryComponent->GetCurrentWeapon());
+}
+
 void ACPP_PlayerCharacter::CreateAndInitializeFPCamera()
 {
 	FPCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FPCamera"));
@@ -118,6 +128,12 @@ void ACPP_PlayerCharacter::CreateAndCheckHealthComponent()
 	check(HealthComponent);
 }
 
+void ACPP_PlayerCharacter::CreateAndCheckInventoryComponent()
+{
+	InventoryComponent = CreateDefaultSubobject<UCPP_InventoryComponent>(TEXT("InventoryComponent"));
+	check(InventoryComponent);
+}
+
 void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -129,5 +145,6 @@ void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction(FName("StartJump"), IE_Pressed, this, &ACPP_PlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction(FName("StopJump"), IE_Released, this, &ACPP_PlayerCharacter::StopJump);
 	PlayerInputComponent->BindAction(FName("Interact"), IE_Pressed, this, &ACPP_PlayerCharacter::Interact);
+	PlayerInputComponent->BindAction(FName("DropWeapon"), IE_Pressed, this, &ACPP_PlayerCharacter::DropWeapon);
 }
 

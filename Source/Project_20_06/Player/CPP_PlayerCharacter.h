@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class UCPP_HealthComponent;
+class UCPP_InventoryComponent;
 
 UCLASS()
 class PROJECT_20_06_API ACPP_PlayerCharacter : public ACharacter
@@ -26,6 +27,12 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Player Character Component")
 	inline UCPP_HealthComponent* GetHealthComponent() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Player Character Component")
+	FORCEINLINE UCPP_InventoryComponent* GetInventoryComponent() const
+	{
+		return InventoryComponent;
+	}
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -46,10 +53,12 @@ protected:
 	virtual void StartJump();
 	virtual void StopJump();
 	virtual void Interact();
+	virtual void DropWeapon();
 
 private:
 	void CreateAndInitializeFPCamera();
 	void CreateAndCheckHealthComponent();
+	void CreateAndCheckInventoryComponent();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
@@ -57,4 +66,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
 	UCPP_HealthComponent* HealthComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
+	UCPP_InventoryComponent* InventoryComponent;
 };

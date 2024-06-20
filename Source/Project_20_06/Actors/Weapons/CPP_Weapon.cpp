@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapons/CPP_Weapon.h"
+#include "Actors/Weapons/CPP_Weapon.h"
+
+#include "Player/CPP_PlayerCharacter.h"
+#include "Player/ActorComponent/CPP_InventoryComponent.h"
 
 ACPP_Weapon::ACPP_Weapon()
 {
@@ -27,4 +30,12 @@ void ACPP_Weapon::StopUsingWeapon()
 void ACPP_Weapon::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ACPP_Weapon::Interact_Implementation(AActor* Caller)
+{
+	if (ACPP_PlayerCharacter* playerCharacter = Cast<ACPP_PlayerCharacter>(Caller))
+	{
+		playerCharacter->GetInventoryComponent()->PickUpWeapon(this);
+	}
 }

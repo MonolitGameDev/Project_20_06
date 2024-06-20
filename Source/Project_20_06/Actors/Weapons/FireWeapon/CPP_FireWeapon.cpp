@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapons/FireWeapon/CPP_FireWeapon.h"
+#include "Actors/Weapons/FireWeapon/CPP_FireWeapon.h"
 #include "Player/CPP_PlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
