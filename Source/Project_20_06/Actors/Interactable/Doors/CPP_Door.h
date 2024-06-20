@@ -8,6 +8,9 @@
 #include "CPP_Door.generated.h"
 
 
+/*
+	FIX ASAP: CODE STYLE
+*/
 
 UCLASS()
 class PROJECT_20_06_API ACPP_Door : public ACPP_InteractableActor
@@ -39,8 +42,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Door | Settings | Timeline")
 	class UCurveFloat* CurveFloat;
 
-	bool bIsDoorClosed = true;
+	bool bIsDoorClosed = true; //Getter, UPROPERTY?
 
 	UPROPERTY(EditDefaultsOnly, Category = "Door | Settings")
-	float DoorRotateAngle = 90.0f;
+	float DoorRotateAngle = 90.0f; //Is needed?
 };

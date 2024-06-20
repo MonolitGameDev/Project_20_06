@@ -53,7 +53,7 @@ private:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
-	UCameraComponent* FPCamera;
+	UCameraComponent* FPCamera; //Getter?
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
 	UCPP_HealthComponent* HealthComponent;
