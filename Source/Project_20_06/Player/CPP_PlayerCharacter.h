@@ -45,6 +45,7 @@ protected:
 	virtual void Turn(float Axis);
 	virtual void StartJump();
 	virtual void StopJump();
+	virtual void Interact();
 
 private:
 	void CreateAndInitializeFPCamera();

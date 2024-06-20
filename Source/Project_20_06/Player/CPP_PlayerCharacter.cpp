@@ -2,8 +2,10 @@
 
 #include "Player/CPP_PlayerCharacter.h"
 #include "Player/ActorComponent/CPP_HealthComponent.h"
-
+#include <Kismet/KismetMathLibrary.h>
 #include "Camera/CameraComponent.h"
+#include <Interfaces/CPP_InteractionInterface.h>
+
 
 ACPP_PlayerCharacter::ACPP_PlayerCharacter()
 {
@@ -78,6 +80,30 @@ void ACPP_PlayerCharacter::StopJump()
 	StopJumping();
 }
 
+void ACPP_PlayerCharacter::Interact()
+{
+	const float distance = 350.0f;
+	auto start = FPCamera->GetComponentLocation();
+	auto lookDirection = UKismetMathLibrary::Conv_RotatorToVector(GetController()->GetControlRotation());
+	auto end = start + lookDirection * distance;
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+
+	DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f, static_cast<uint8>(0U), 0.5f);
+
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, params))
+	{
+		if (auto actor = hitResult.GetActor())
+		{
+			if (actor->Implements<UCPP_InteractionInterface>())
+			{
+				ICPP_InteractionInterface::Execute_Interact(actor, this);
+			}
+		}
+	}
+}
+
 void ACPP_PlayerCharacter::CreateAndInitializeFPCamera()
 {
 	FPCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FPCamera"));
@@ -102,5 +128,6 @@ void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &ACPP_PlayerCharacter::Turn);
 	PlayerInputComponent->BindAction(FName("StartJump"), IE_Pressed, this, &ACPP_PlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction(FName("StopJump"), IE_Released, this, &ACPP_PlayerCharacter::StopJump);
+	PlayerInputComponent->BindAction(FName("Interact"), IE_Pressed, this, &ACPP_PlayerCharacter::Interact);
 }
 
