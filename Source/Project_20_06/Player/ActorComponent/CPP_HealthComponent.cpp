@@ -37,6 +37,7 @@ void UCPP_HealthComponent::AddHealth(int32 Value)
 	else if (sum <= 0) //Collapse into a method
 	{
 		bAlive = false;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("You DIE!"));
 	}
 	else
 	{
