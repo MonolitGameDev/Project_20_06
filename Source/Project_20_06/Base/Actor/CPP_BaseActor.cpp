@@ -5,6 +5,7 @@
 
 ACPP_BaseActor::ACPP_BaseActor()
 {
+	//Collapse into a method
 	PrimaryActorTick.bCanEverTick = false;
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	check(Root);

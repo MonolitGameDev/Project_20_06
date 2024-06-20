@@ -8,6 +8,7 @@
 
 ACPP_Weapon::ACPP_Weapon()
 {
+	//Collapse into method
 	auto Mesh = GetSkeletalMeshComponent();
 	Mesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 }

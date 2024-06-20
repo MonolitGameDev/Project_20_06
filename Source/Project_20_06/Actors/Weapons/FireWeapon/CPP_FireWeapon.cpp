@@ -35,12 +35,13 @@ void ACPP_FireWeapon::Fire()
 {
 	Trace();
 
-	if (FireMode == EFireMode::Automatic && bWeaponInUse)
+	if (FireMode == EFireMode::Automatic && bWeaponInUse) //Collapse it in a method
 	{
 		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ACPP_FireWeapon::Fire, FireDelay, false);
 	}
 }
 
+//FORCEINLINE, Implement inside class
 bool ACPP_FireWeapon::IsAbleToUseWeapon() const
 {
 	return bAbleToUse;
@@ -53,6 +54,11 @@ void ACPP_FireWeapon::BeginPlay()
 
 void ACPP_FireWeapon::Trace()
 {
+	/*
+		Rewrite using a struct (make one)
+		And make a function library
+	*/
+
 	FVector Start = WeaponOwner->GetActorLocation();
 	FRotator Rotation = WeaponOwner->GetControlRotation();
 	FVector End = Start + Rotation.Vector() * 10000.0f;
@@ -75,7 +81,7 @@ void ACPP_FireWeapon::StartFiring()
 {
 	bWeaponInUse = true;
 
-	if (FireMode == EFireMode::SingleShot)
+	if (FireMode == EFireMode::SingleShot) //switch
 	{
 		Fire();
 		StopUsingWeapon();

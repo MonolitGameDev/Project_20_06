@@ -25,6 +25,7 @@ void ACPP_PlayerCharacter::BeginPlay()
 
 }
 
+//FORCEINLINE, Implement inside class
 inline UCPP_HealthComponent* ACPP_PlayerCharacter::GetHealthComponent() const
 {
 	return HealthComponent;
@@ -86,6 +87,11 @@ void ACPP_PlayerCharacter::StopJump()
 
 void ACPP_PlayerCharacter::Interact()
 {
+	/*
+		Rewrite using a struct (make one)
+		And make a function library
+	*/
+
 	const float distance = 350.0f;
 	auto start = FPCamera->GetComponentLocation();
 	auto lookDirection = UKismetMathLibrary::Conv_RotatorToVector(GetController()->GetControlRotation());
@@ -144,7 +150,7 @@ void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &ACPP_PlayerCharacter::Turn);
 	PlayerInputComponent->BindAction(FName("StartJump"), IE_Pressed, this, &ACPP_PlayerCharacter::StartJump);
 	PlayerInputComponent->BindAction(FName("StopJump"), IE_Released, this, &ACPP_PlayerCharacter::StopJump);
-	PlayerInputComponent->BindAction(FName("Interact"), IE_Pressed, this, &ACPP_PlayerCharacter::Interact);
+	PlayerInputComponent->BindAction(FName("Interact"), IE_Pressed, this, &ACPP_PlayerCharacter::Interact); //THERE IS NO INTERACT KEY EVENT!!! ADD ONE IN THE PROJECT SETTINGS!!!
 	PlayerInputComponent->BindAction(FName("DropWeapon"), IE_Pressed, this, &ACPP_PlayerCharacter::DropWeapon);
 }
 
