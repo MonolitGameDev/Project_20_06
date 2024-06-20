@@ -22,6 +22,7 @@ void UCPP_InventoryComponent::PickUpWeapon(ACPP_Weapon* Weapon)
 	if (Weapon)
 	{
 		CurrentWeapon = Weapon;
+		//Attach to player character
 	}
 }
 
@@ -29,7 +30,7 @@ void UCPP_InventoryComponent::DropWeapon(ACPP_Weapon* WeaponToDrop)
 {
 	if (WeaponToDrop)
 	{
-		WeaponToDrop->Destroy();
+		WeaponToDrop->Destroy(); //Shouldn't be destroyed, but dropped
 		WeaponToDrop = nullptr;
 	}
 }
