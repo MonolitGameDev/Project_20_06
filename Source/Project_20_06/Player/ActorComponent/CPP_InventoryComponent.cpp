@@ -6,7 +6,7 @@
 
 UCPP_InventoryComponent::UCPP_InventoryComponent()
 {
-	
+	//TRUE?
 	PrimaryComponentTick.bCanEverTick = true;
 
 }
