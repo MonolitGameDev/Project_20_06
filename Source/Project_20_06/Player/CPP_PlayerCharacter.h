@@ -4,12 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "Interfaces/CPP_HasWeapon.h"
+#include <Interfaces/CPP_InteractionInterface.h>
+
+#include "Helpers/InteractParams.h"
+
 #include "CPP_PlayerCharacter.generated.h"
+
 
 class UCameraComponent;
 class UCPP_HealthComponent;
 class UCPP_InventoryComponent;
+
+#define INTERACT_DISTANCE 350.0f
 
 UCLASS()
 class PROJECT_20_06_API ACPP_PlayerCharacter : public ACharacter, public ICPP_HasWeapon
@@ -51,6 +59,7 @@ protected:
 		AActor* DamageCauser
 	);
 
+
 protected:
 	virtual void PickUpWeapon_Implementation(ACPP_Weapon* Weapon);
 
@@ -69,6 +78,8 @@ private:
 	void CreateAndCheckHealthComponent();
 	void CreateAndCheckInventoryComponent();
 	void CreateAndCheckWeaponComponent();
+	void InteractWithHitActor(const FInteractParams& InteractParams);
+	FInteractParams CalculateVariablesForInteraction();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")

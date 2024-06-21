@@ -5,59 +5,84 @@
 
 ACPP_Door::ACPP_Door()
 {
-	//Collapse into a methods
-	DoorFrame = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrame"));
-	Door = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door"));
-
-	check(DoorFrame);
-	check(Door);
-
-	DoorFrame->SetupAttachment(RootComponent);
-	Door->SetupAttachment(DoorFrame);
+	CreateAndInitializeDoorFrame();
+	CreateAndInitializeDoor();
+	CreateAndInitializeDoorTimeline();
 }
 
 void ACPP_Door::BeginPlay()
 {
 	Super::BeginPlay();
-	if (CurveFloat)
-	{
-		//Collapse into a methods
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Namaracil"));
-		FOnTimelineFloat timelineProgress;
-		//Move to the constructor
-		timelineProgress.BindDynamic(this, &ACPP_Door::OpenDoor);
-		Timeline.AddInterpFloat(CurveFloat, timelineProgress);
-	}
+	
+	CreateDoorTimelineHandler();
 }
 
 void ACPP_Door::Interact_Implementation(AActor* Caller)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Interact with door"));
 
-	if (bIsDoorClosed)  //Collapse into a methods
-	{
-		SetDoorOnSameSide(Caller); //Collapse into a methods
-		Timeline.Play();
-	}
-	else
-	{
-		Timeline.Reverse(); //Collapse into a methods
-	}
-	bIsDoorClosed = !bIsDoorClosed; //Collapse into a methods
+	OpenDoor(Caller);
 }
 
-void ACPP_Door::OpenDoor(float Value)
+void ACPP_Door::RotateDoor(float Value)
 {
 	FRotator rotator = FRotator(0.0f, Value * DoorRotateAngle, 0.0f);
 	Door->SetRelativeRotation(rotator);
 }
 
-void ACPP_Door::SetDoorOnSameSide(AActor* Actor)
+void ACPP_Door::OpenDoor(AActor* Caller)
 {
-	if (Actor)
+	if (DoorTimeline->IsPlaying()) return;
+
+	IsDoorClosed() ? StartOpeningDoorTimeline(Caller) :	StartClosingDoorTimeline();
+	
+	ChangeDoorClosedState();
+}
+
+void ACPP_Door::StartOpeningDoorTimeline(AActor* Caller)
+{
+	SetDoorOnSameSide(Caller);
+	DoorTimeline->Play();
+}
+
+void ACPP_Door::StartClosingDoorTimeline()
+{
+	DoorTimeline->Reverse();
+}
+
+void ACPP_Door::ChangeDoorClosedState()
+{
+	bDoorClosed = !bDoorClosed;
+}
+
+void ACPP_Door::CreateAndInitializeDoorFrame()
+{
+	DoorFrame = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrame"));
+	check(DoorFrame);
+	DoorFrame->SetupAttachment(RootComponent);
+}
+
+void ACPP_Door::CreateAndInitializeDoor()
+{
+	Door = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door"));
+	check(Door);
+	Door->SetupAttachment(DoorFrame);
+}
+
+void ACPP_Door::CreateAndInitializeDoorTimeline()
+{
+	DoorTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DoorTimeline"));
+	check(DoorTimeline);
+
+	
+}
+
+void ACPP_Door::CreateDoorTimelineHandler()
+{
+	if (CurveFloat)
 	{
-		FVector characterFV = Actor->GetActorForwardVector();
-		FVector doorFV = GetActorForwardVector();
-		DoorRotateAngle = (FVector::DotProduct(characterFV, doorFV) >= 0) ? DoorRotateAngle : -DoorRotateAngle;
+		FOnTimelineFloat timelineProgress;
+		timelineProgress.BindDynamic(this, &ACPP_Door::RotateDoor);
+		DoorTimeline->AddInterpFloat(CurveFloat, timelineProgress);
 	}
 }
