@@ -3,7 +3,7 @@
 #include "Player/CPP_PlayerCharacter.h"
 #include "Player/ActorComponent/CPP_HealthComponent.h"
 #include "Player/ActorComponent/CPP_InventoryComponent.h"
-
+#include "FunctionLibraries/CPP_InteractionLibrary.h"
 #include <Kismet/KismetMathLibrary.h>
 
 #include "Camera/CameraComponent.h"
@@ -87,30 +87,11 @@ void ACPP_PlayerCharacter::StopJump()
 
 void ACPP_PlayerCharacter::Interact()
 {
-	/*
-		Rewrite using a struct (make one)
-		And make a function library
-	*/
-
-	const float distance = 350.0f;
-	auto start = FPCamera->GetComponentLocation();
-	auto lookDirection = UKismetMathLibrary::Conv_RotatorToVector(GetController()->GetControlRotation());
-	auto end = start + lookDirection * distance;
-	FHitResult hitResult;
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(this);
-
-	DrawDebugLine(GetWorld(), start, end, FColor::Blue, false, 2.0f, static_cast<uint8>(0U), 0.5f);
-
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, params))
+	FInteractParams interactParams = CalculateVariablesForInteraction();
+	DrawDebugLine(GetWorld(), interactParams.Start, interactParams.End, FColor::Blue, false, 2.0f, static_cast<uint8>(0U), 0.5f);
+	if (UCPP_InteractionLibrary::Trace(this, interactParams))
 	{
-		if (auto actor = hitResult.GetActor())
-		{
-			if (actor->Implements<UCPP_InteractionInterface>())
-			{
-				ICPP_InteractionInterface::Execute_Interact(actor, this);
-			}
-		}
+		InteractWithHitActor(interactParams);
 	}
 }
 
@@ -138,6 +119,28 @@ void ACPP_PlayerCharacter::CreateAndCheckInventoryComponent()
 {
 	InventoryComponent = CreateDefaultSubobject<UCPP_InventoryComponent>(TEXT("InventoryComponent"));
 	check(InventoryComponent);
+}
+
+void ACPP_PlayerCharacter::InteractWithHitActor(const FInteractParams& InteractParams)
+{
+	if (AActor* actor = InteractParams.HitResult.GetActor())
+	{
+		if (actor->Implements<UCPP_InteractionInterface>())
+		{
+			ICPP_InteractionInterface::Execute_Interact(actor, this);
+		}
+	}
+}
+
+FInteractParams ACPP_PlayerCharacter::CalculateVariablesForInteraction()
+{
+	FInteractParams result;
+	FVector lookDirection = UKismetMathLibrary::Conv_RotatorToVector(GetController()->GetControlRotation());
+	result.Distance = INTERACT_DISTANCE;
+	result.Start = FPCamera->GetComponentLocation();
+	result.End = result.Start + lookDirection * result.Distance;
+	result.CollisionQueryParams.AddIgnoredActor(this);
+	return result;
 }
 
 void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
