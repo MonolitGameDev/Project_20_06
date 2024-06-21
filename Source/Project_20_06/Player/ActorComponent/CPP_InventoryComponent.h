@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Actors/Interactable/Items/ActorItemInfo.h"
 #include "CPP_InventoryComponent.generated.h"
-
-class ACPP_Weapon;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECT_20_06_API UCPP_InventoryComponent : public UActorComponent
@@ -16,23 +15,30 @@ class PROJECT_20_06_API UCPP_InventoryComponent : public UActorComponent
 public:	
 	UCPP_InventoryComponent();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:
-	virtual void PickUpWeapon(ACPP_Weapon* Weapon);
-	virtual void DropWeapon(ACPP_Weapon* WeaponToDrop);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory Component | Weapons")
-	FORCEINLINE ACPP_Weapon* GetCurrentWeapon() const
+	UFUNCTION(BlueprintCallable, Category = "Inventory Component | Inventory")
+	FORCEINLINE void GetInventory(TArray<FActorItemInfo>& const OutInventory) const
 	{
-		return CurrentWeapon;
+		OutInventory = Inventory;
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory Component | Inventory")
+	virtual bool AddToInventory(const FActorItemInfo& ItemInfo);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory Component | Inventory")
+	virtual bool FindInInventory(UClass* ItemClass);
+
+protected:
+	static void CreateInventory(TArray<FActorItemInfo>& Inventory, int32 InventorySize);
+	bool AddUnstackable(const FActorItemInfo& ItemInfo);
+
+private:
+	bool FindEmptySlot(int32& Index);
 
 protected:	
 	UPROPERTY()
 	int32 InventorySize = 10;
 
-	UPROPERTY()
-	ACPP_Weapon* CurrentWeapon;
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory Properties")
+	TArray<FActorItemInfo> Inventory;
 };

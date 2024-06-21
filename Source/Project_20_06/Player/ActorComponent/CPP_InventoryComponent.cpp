@@ -3,33 +3,50 @@
 
 #include "Player/ActorComponent/CPP_InventoryComponent.h"
 
-#include "Actors/Weapons/CPP_Weapon.h"
+#include "Actors/Interactable/Items/CPP_Item.h"
 
 UCPP_InventoryComponent::UCPP_InventoryComponent()
 {
-	//TRUE?
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
+	CreateInventory(Inventory, InventorySize);
 }
 
-void UCPP_InventoryComponent::BeginPlay()
+bool UCPP_InventoryComponent::AddToInventory(const FActorItemInfo& ItemInfo)
 {
-	Super::BeginPlay();
+	return AddUnstackable(ItemInfo);
 }
 
-void UCPP_InventoryComponent::PickUpWeapon(ACPP_Weapon* Weapon)
+bool UCPP_InventoryComponent::FindInInventory(UClass* ItemClass)
 {
-	if (Weapon)
+	return Inventory.FindByPredicate([&](const FActorItemInfo& ItemInfo)
+		{
+			return ItemInfo.Class == ItemClass;
+		}) != nullptr;
+}
+
+void UCPP_InventoryComponent::CreateInventory(TArray<FActorItemInfo>& Inventory, int32 InventorySize)
+{
+	for (int32 i = 0; i < InventorySize; ++i)
 	{
-		CurrentWeapon = Weapon;
+		Inventory.Add(FActorItemInfo::CreateEmptyItemInfo(i));
 	}
 }
 
-void UCPP_InventoryComponent::DropWeapon(ACPP_Weapon* WeaponToDrop)
+bool UCPP_InventoryComponent::AddUnstackable(const FActorItemInfo& ItemInfo)
 {
-	if (WeaponToDrop)
+	int32 emptyIndex;
+	if (FindEmptySlot(emptyIndex))
 	{
-		WeaponToDrop->Destroy();
-		WeaponToDrop = nullptr;
+		Inventory[emptyIndex] = ItemInfo;
+		Inventory[emptyIndex].Index = emptyIndex;
+		return true;
 	}
+	return false;
+}
+
+bool UCPP_InventoryComponent::FindEmptySlot(int32& Index)
+{
+	FActorItemInfo temp;
+	return Inventory.Find(temp, Index);
 }
