@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/CPP_HasWeapon.h"
 #include "CPP_PlayerCharacter.generated.h"
 
 class UCameraComponent;
@@ -11,7 +12,7 @@ class UCPP_HealthComponent;
 class UCPP_InventoryComponent;
 
 UCLASS()
-class PROJECT_20_06_API ACPP_PlayerCharacter : public ACharacter
+class PROJECT_20_06_API ACPP_PlayerCharacter : public ACharacter, public ICPP_HasWeapon
 {
 	GENERATED_BODY()
 
@@ -34,6 +35,11 @@ public:
 		return InventoryComponent;
 	}
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Player Character Component")
+	FORCEINLINE UCPP_WeaponComponent* GetWeaponComponent() const
+	{
+		return WeaponComponent;
+	}
 protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnPlayerCharacterTakeAnyDamage
@@ -44,6 +50,9 @@ protected:
 		class AController* InstigatedBy,
 		AActor* DamageCauser
 	);
+
+protected:
+	virtual void PickUpWeapon_Implementation(ACPP_Weapon* Weapon);
 
 protected:
 	virtual void MoveForward(float Axis);
@@ -59,6 +68,7 @@ private:
 	void CreateAndInitializeFPCamera();
 	void CreateAndCheckHealthComponent();
 	void CreateAndCheckInventoryComponent();
+	void CreateAndCheckWeaponComponent();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
@@ -69,4 +79,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
 	UCPP_InventoryComponent* InventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Character Components")
+	UCPP_WeaponComponent* WeaponComponent;
 };

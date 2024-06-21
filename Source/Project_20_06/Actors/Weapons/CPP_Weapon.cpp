@@ -6,6 +6,8 @@
 #include "Player/CPP_PlayerCharacter.h"
 #include "Player/ActorComponent/CPP_InventoryComponent.h"
 
+#include "Interfaces/CPP_HasWeapon.h"
+
 ACPP_Weapon::ACPP_Weapon()
 {
 	//Collapse into method
@@ -35,8 +37,8 @@ void ACPP_Weapon::BeginPlay()
 
 void ACPP_Weapon::Interact_Implementation(AActor* Caller)
 {
-	if (ACPP_PlayerCharacter* playerCharacter = Cast<ACPP_PlayerCharacter>(Caller))
+	if (Caller && Caller->Implements<UCPP_HasWeapon>())
 	{
-		playerCharacter->GetInventoryComponent()->PickUpWeapon(this);
+		ICPP_HasWeapon::Execute_PickUpWeapon(Caller, this);
 	}
 }

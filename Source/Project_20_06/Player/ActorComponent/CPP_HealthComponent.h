@@ -33,5 +33,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health Component")
 	bool bAlive = true;
-
 };

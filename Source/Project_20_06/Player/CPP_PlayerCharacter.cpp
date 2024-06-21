@@ -2,6 +2,7 @@
 
 #include "Player/CPP_PlayerCharacter.h"
 #include "Player/ActorComponent/CPP_HealthComponent.h"
+#include "Player/ActorComponent/CPP_WeaponComponent.h"
 #include "Player/ActorComponent/CPP_InventoryComponent.h"
 
 #include <Kismet/KismetMathLibrary.h>
@@ -17,6 +18,7 @@ ACPP_PlayerCharacter::ACPP_PlayerCharacter()
 	CreateAndCheckInventoryComponent();
 	CreateAndInitializeFPCamera();
 	CreateAndCheckHealthComponent();
+	CreateAndCheckWeaponComponent();
 }
 
 void ACPP_PlayerCharacter::BeginPlay()
@@ -41,6 +43,14 @@ void ACPP_PlayerCharacter::OnPlayerCharacterTakeAnyDamage
 )
 {
 	HealthComponent->AddHealth(static_cast<int32>(-Damage));
+}
+
+void ACPP_PlayerCharacter::PickUpWeapon_Implementation(ACPP_Weapon* Weapon)
+{
+	if (Weapon)
+	{
+		GetWeaponComponent()->PickUpWeapon(Weapon);
+	}
 }
 
 void ACPP_PlayerCharacter::MoveForward(float Axis)
@@ -116,8 +126,8 @@ void ACPP_PlayerCharacter::Interact()
 
 void ACPP_PlayerCharacter::DropWeapon()
 {
-	UCPP_InventoryComponent* inventoryComponent = GetInventoryComponent();
-	inventoryComponent->DropWeapon(inventoryComponent->GetCurrentWeapon());
+	UCPP_WeaponComponent* weaponComponent = GetWeaponComponent();
+	weaponComponent->DropWeapon(weaponComponent->GetCurrentWeapon());
 }
 
 void ACPP_PlayerCharacter::CreateAndInitializeFPCamera()
@@ -138,6 +148,12 @@ void ACPP_PlayerCharacter::CreateAndCheckInventoryComponent()
 {
 	InventoryComponent = CreateDefaultSubobject<UCPP_InventoryComponent>(TEXT("InventoryComponent"));
 	check(InventoryComponent);
+}
+
+void ACPP_PlayerCharacter::CreateAndCheckWeaponComponent()
+{
+	WeaponComponent = CreateDefaultSubobject<UCPP_WeaponComponent>(TEXT("WeaponComponent"));
+	check(WeaponComponent);
 }
 
 void ACPP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
